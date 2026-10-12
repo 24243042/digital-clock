@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101916">
+  <title>Digital Clock</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/clock.js" defer></script>
+</head>
+<body>
+  <main class="clock-app">
+    <header class="topbar">
+      <a class="wordmark" href="/" aria-label="Digital Clock home">
+        <span class="wordmark-mark" aria-hidden="true"></span>
+        <span>FIELD<span class="wordmark-light">TIME</span></span>
+      </a>
+      <div class="live-indicator"><span></span> LIVE CLOCK</div>
+    </header>
+
+    <section class="clock-face" aria-label="Digital clock">
+      <div class="eyebrow"><span class="eyebrow-line"></span><span id="zone-label">LOCAL TIME</span><span class="eyebrow-line"></span></div>
+      <div class="time-row" aria-label="Current time">
+        <time id="clock-time" aria-live="off">--:--</time>
+        <span id="clock-seconds" class="seconds" aria-hidden="true">--</span>
+        <span id="clock-period" class="period" aria-hidden="true"></span>
+      </div>
+      <p id="clock-date" class="date-line">Loading date...</p>
+      <div class="face-rule"><span></span></div>
+      <p class="quote-line">A little more present, one second at a time.</p>
+    </section>
+
+    <section class="controls" aria-label="Clock settings">
+      <div class="control-group format-group">
+        <span class="control-label" id="format-label">FORMAT</span>
+        <div class="segmented" role="group" aria-labelledby="format-label">
+          <button type="button" data-format="12" aria-pressed="false">12H</button>
+          <button type="button" data-format="24" aria-pressed="true">24H</button>
+        </div>
+      </div>
+      <label class="control-group seconds-control" for="seconds-toggle">
+        <span class="control-label">SECONDS</span>
+        <input id="seconds-toggle" type="checkbox" checked>
+        <span class="switch" aria-hidden="true"></span>
+      </label>
+      <label class="control-group zone-control" for="timezone-select">
+        <span class="control-label">TIME ZONE</span>
+        <select id="timezone-select">
+          <option value="local">Local</option>
+          <option value="UTC">UTC</option>
+          <option value="Asia/Tokyo">Tokyo</option>
+          <option value="America/New_York">New York</option>
+          <option value="Europe/London">London</option>
+        </select>
+      </label>
+      <button type="button" id="fullscreen-button" class="fullscreen-button">Full screen <span aria-hidden="true">↗</span></button>
+    </section>
+
+    <footer class="footer">
+      <span>TIME, RIGHT HERE.</span>
+      <span id="timezone-detail"></span>
+      <span>BUILT FOR THE MOMENT <i></i></span>
+    </footer>
+  </main>
+</body>
+</html>
