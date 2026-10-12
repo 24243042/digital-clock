@@ -1,3 +1,4 @@
+```groovy
 pipeline {
     agent any
 
@@ -9,27 +10,22 @@ pipeline {
     stages {
         stage('Build image') {
             steps {
-                sh 'docker build --tag "$IMAGE" .'
+                bat 'docker build --tag "%IMAGE%" .'
             }
         }
+
         stage('Smoke test') {
             steps {
-                sh '''
-                    set -eu
-                    docker run --detach --rm --name "$CONTAINER_NAME" \\
-                        --publish 127.0.0.1::8080 "$IMAGE"
-                    port=$(docker port "$CONTAINER_NAME" 8080/tcp | sed 's/.*://')
-                    ready=false
-                    for attempt in $(seq 1 30); do
-                        if curl --fail --silent "http://127.0.0.1:$port/health" >/dev/null; then
-                            ready=true
-                            break
-                        fi
-                        sleep 1
-                    done
-                    test "$ready" = true
-                    curl --fail --silent "http://127.0.0.1:$port/" | grep -q 'Digital Clock'
-                    curl --fail --silent "http://127.0.0.1:$port/styles.css" | grep -q 'clock-app'
+                bat '''
+                    @echo off
+                    docker run -d --rm --name "%CONTAINER_NAME%" -p 127.0.0.1:18080:8080 "%IMAGE%"
+                    if errorlevel 1 exit /b 1
+
+                    powershell -NoProfile -ExecutionPolicy Bypass -Command "$ready=$false; for($i=0;$i -lt 30;$i++){ try { $r=Invoke-WebRequest -Uri 'http://127.0.0.1:18080/health' -TimeoutSec 2; if($r.StatusCode -eq 200){$ready=$true;break} } catch {}; Start-Sleep -Seconds 1 }; if(-not $ready){exit 1}"
+
+                    powershell -NoProfile -ExecutionPolicy Bypass -Command "$r=Invoke-WebRequest -Uri 'http://127.0.0.1:18080/' -TimeoutSec 5; if($r.Content -notmatch 'Digital Clock'){exit 1}"
+
+                    powershell -NoProfile -ExecutionPolicy Bypass -Command "$r=Invoke-WebRequest -Uri 'http://127.0.0.1:18080/styles.css' -TimeoutSec 5; if($r.Content -notmatch 'clock-app'){exit 1}"
                 '''
             }
         }
@@ -37,7 +33,8 @@ pipeline {
 
     post {
         always {
-            sh 'docker rm --force "$CONTAINER_NAME" >/dev/null 2>&1 || true'
+            bat 'docker rm --force "%CONTAINER_NAME%" 2>nul || exit /b 0'
         }
     }
 }
+```
